@@ -2,16 +2,20 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+//square component
 function Square(props) {
+  //props.value will be x, o, or null
   return (
     <button className="square" onClick={props.onClick} >
-      {props.value}
+      {props.value} 
     </button>
   );
 }
 
 class Board extends React.Component {
 
+  // i is the array index
+  // value and onclick come from game class
   renderSquare(i) {
     return (
       <Square
@@ -47,9 +51,11 @@ class Board extends React.Component {
 class Game extends React.Component {
   constructor(props) {
     super(props);
+    
     this.state = {
       history: [{
         squares: Array(9).fill(null),
+        currentMove: Array(2).fill(0),
       }],
       stepNumber: 0,
       xIsNext: true,
@@ -60,15 +66,20 @@ class Game extends React.Component {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
+    let moves = current.currentMove.slice();
 
+    //early return if there is already a winner or the square is filled
     if (checkWinner(squares) || squares[i]) {
       return;
     }
 
+    moves = getRowCol(i);
+
     squares[i] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
       history: history.concat([{
-        squares: squares
+        squares: squares,
+        currentMove: moves
       }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
@@ -88,8 +99,8 @@ class Game extends React.Component {
 
     //each time we re-render check if there is a winner
     const winner = checkWinner(current.squares);
-    let status;
 
+    let status;
     if (winner) {
       status = 'Winner: ' + winner;
     }
@@ -98,7 +109,7 @@ class Game extends React.Component {
     }
 
     const moves = history.map((step, move) => {
-      const desc = move ? 'go to move #' + move : ' go to game start';
+      const desc = move ? 'go to move #' + move + ' at ' + history[move].currentMove : ' go to game start';
       return (
         <li key={move}>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
@@ -151,4 +162,23 @@ function checkWinner(squares) {
     }
   }
   return null;
+}
+
+function getRowCol(i){
+  let cord = [0,0];
+
+  if (i <= 2) {
+    cord[0] = 0;
+    cord[1] = i;
+  }
+  else if (i > 2 && i <= 5) {
+    cord[0] = 1;
+    cord[1] = i-3;
+  }
+  else {
+    cord[0] = 2;
+    cord[1] = i-6;
+  }
+  
+  return cord;
 }
