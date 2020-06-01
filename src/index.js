@@ -91,6 +91,7 @@ class Game extends React.Component {
       stepNumber: step,
       xIsNext: (step % 2) === 0,
     });
+    
   }
 
   render() {
@@ -112,7 +113,12 @@ class Game extends React.Component {
       const desc = move ? 'go to move #' + move + ' at ' + history[move].currentMove : ' go to game start';
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <button 
+          /*step number is the length of history and if we go back the history gets 
+          shortenned therefore the item we click is the new step number*/
+          className={move === this.state.stepNumber ? 'bold-button' :''} 
+          onClick={() => this.jumpTo(move)}>{desc}
+          </button>
         </li>
       );
     });
