@@ -9,6 +9,7 @@ class ToggleButton extends React.Component{
     this.handleChange = this.handleChange.bind(this);
   }
 
+  //calls the on change method passed as a prop
   handleChange(event){
     this.props.onChange(event.target.checked);
   }
@@ -115,6 +116,7 @@ class Game extends React.Component {
     });
   }
 
+  //updates the boolean isAscending 
   handleChange(value){
     this.setState({isAscending: value});
   }
@@ -156,6 +158,7 @@ class Game extends React.Component {
       );
     });
 
+    //if the state is set to false it means we want descending list
     if(!this.state.isAscending){
       moves.reverse();
     }
