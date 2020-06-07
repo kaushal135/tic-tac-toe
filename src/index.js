@@ -2,6 +2,30 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+// a controlled component which will be a toggle button
+class ToggleButton extends React.Component{
+  constructor(props){
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event){
+    this.props.onChange(event.target.checked);
+  }
+
+  render(){
+    return(
+      <div className= "game-info">
+        Display Ascending
+        <label className="switch">
+          <input type="checkbox" onChange={this.handleChange} checked={this.props.value}/>
+          <span className="slider"></span>
+        </label>
+      </div>
+    );
+  }
+}
+
 //square component
 function Square(props) {
   //props.value will be x, o, or null
@@ -61,7 +85,10 @@ class Game extends React.Component {
       }],
       stepNumber: 0,
       xIsNext: true,
+      isAscending: false
     };
+
+    this.handleChange = this.handleChange.bind(this);
   }
 
   handleClick(i) {
@@ -88,6 +115,10 @@ class Game extends React.Component {
     });
   }
 
+  handleChange(value){
+    this.setState({isAscending: value});
+  }
+
   jumpTo(step) {
     this.setState({
       stepNumber: step,
@@ -111,7 +142,7 @@ class Game extends React.Component {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
 
-    const moves = history.map((step, move) => {
+    let moves = history.map((step, move) => {
       const desc = move ? 'go to move #' + move + ' at ' + history[move].currentMove : ' go to game start';
       return (
         <li key={move}>
@@ -125,6 +156,10 @@ class Game extends React.Component {
       );
     });
 
+    if(!this.state.isAscending){
+      moves.reverse();
+    }
+
     return (
       <div className="game">
         <div className="game-board">
@@ -137,6 +172,7 @@ class Game extends React.Component {
           <div>{status}</div>
           <ol>{moves}</ol>
         </div>
+          <ToggleButton value={this.state.isAscending} onChange={this.handleChange}/>
       </div>
     );
   }
