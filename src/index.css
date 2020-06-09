@@ -33,6 +33,10 @@ body {
     width: 34px;
   }
   
+  .square.winner{
+    background: #ddd
+  }
+
   .square:focus {
     outline: none;
   }

@@ -31,7 +31,7 @@ class ToggleButton extends React.Component{
 function Square(props) {
   //props.value will be x, o, or null
   return (
-    <button className="square" onClick={props.onClick} >
+    <button className={props.className} onClick={props.onClick} >
       {props.value} 
     </button>
   );
@@ -42,8 +42,12 @@ class Board extends React.Component {
   // i is the array index
   // value and onclick come from game class
   renderSquare(i) {
+    const winnerSquares = this.props.winnerSquares;
+    let className = (winnerSquares && winnerSquares.includes(i)) ? "square winner" : "square";
+    
     return (
       <Square
+        className = {className}
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
       />
@@ -51,13 +55,11 @@ class Board extends React.Component {
   }
 
   render() {
-
     const boardSize = 3;
     let rows = [];
     let counter = 0;
     // Use two loops to make the squares
     for(let i = 0; i < boardSize; i++){
-      
       let cols = [];
       for(let j = 0; j < 3; j++){
         cols.push(this.renderSquare(counter));
@@ -86,7 +88,7 @@ class Game extends React.Component {
       }],
       stepNumber: 0,
       xIsNext: true,
-      isAscending: false
+      isAscending: true,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -134,8 +136,15 @@ class Game extends React.Component {
     const current = history[this.state.stepNumber];
 
     //each time we re-render check if there is a winner
-    const winner = checkWinner(current.squares);
-
+    const obj = checkWinner(current.squares);
+    let winner = null; 
+    let winnerSquares = null;
+    
+    if(obj){
+      winner = obj.winner;
+      winnerSquares = obj.winnerSquares;
+    }
+       
     let status;
     if (winner) {
       status = 'Winner: ' + winner;
@@ -168,6 +177,7 @@ class Game extends React.Component {
         <div className="game-board">
           <Board
             squares={current.squares}
+            winnerSquares = {winnerSquares}
             onClick={(i) => this.handleClick(i)}
           />
         </div>
@@ -175,7 +185,7 @@ class Game extends React.Component {
           <div>{status}</div>
           <ol>{moves}</ol>
         </div>
-          <ToggleButton value={this.state.isAscending} onChange={this.handleChange}/>
+        <ToggleButton value={this.state.isAscending} onChange={this.handleChange}/>
       </div>
     );
   }
@@ -188,6 +198,8 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+/*checks to see if there was a winner, if yes return the winner's letter
+otherwise return null*/
 function checkWinner(squares) {
   const possibilities = [
     [0, 1, 2],
@@ -204,13 +216,17 @@ function checkWinner(squares) {
     const [a, b, c] = possibilities[i];
 
     //check if the square at a is not null, then check the square at b and c if they are same as a
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {    
+      return {
+        winner: squares[a],
+        winnerSquares: [a,b,c]
+      };
     }
   }
   return null;
 }
 
+//used to get the row and column to display in the moves list
 function getRowCol(i){
   let cord = [0,0];
 
