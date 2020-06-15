@@ -134,6 +134,7 @@ class Game extends React.Component {
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
+    const stepNumber = this.state.stepNumber;
 
     //each time we re-render check if there is a winner
     const obj = checkWinner(current.squares);
@@ -145,12 +146,15 @@ class Game extends React.Component {
       winnerSquares = obj.winnerSquares;
     }
        
-    let status;
+    let status = "";
     if (winner) {
       status = 'Winner: ' + winner;
     }
-    else {
+    else if(stepNumber < 9) {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
+    else{
+      status = "Draw!";
     }
 
     let moves = history.map((step, move) => {
